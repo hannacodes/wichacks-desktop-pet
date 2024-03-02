@@ -1,4 +1,6 @@
 # pip install inference
+# for bash: export ROBOFLOW_API_KEY=<api key>
+# for windows: set ROBOFLOW_API_KEY=<api key>
 # Import the InferencePipeline object
 from inference import InferencePipeline
 
