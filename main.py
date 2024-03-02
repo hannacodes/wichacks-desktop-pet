@@ -9,7 +9,7 @@ class pet():
         self.window = tk.Tk()
 
         # placeholder image
-        img = tk.PhotoImage(file="assets/placeholder.png")
+        self.img = tk.PhotoImage(file="assets/placeholder.png")
 
         # set focushighlight to black when the window does not have focus
         self.window.config(highlightbackground="black")
@@ -27,10 +27,11 @@ class pet():
         self.label = tk.Label(self.window, bd=0, bg="black")
 
         # create a window of size 128x128 pixels, at coordinates 0,0
-        self.window.geometry("128x128+0+0")
+        self.x = 0
+        self.window.geometry('128x128+{x}+0'.format(x=str(self.x)))
 
         # add the image to our label
-        self.label.configure(image=img)
+        self.label.configure(image=self.img)
 
         # give window to geometry manager (so it will appear)
         self.label.pack()
@@ -40,7 +41,12 @@ class pet():
         self.window.mainloop()
 
     def update(self):
+        self.x += 1 
+        self.window.geometry('128x128+{x}+0'.format(x=str(self.x)))
+        self.label.configure(image=self.img)
+        self.label.pack()
         # add code here
         self.window.after(10, self.update)
+
 
 pet()
