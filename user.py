@@ -84,14 +84,13 @@ import os
 
 
 def main():
-    # currently_running = True
-    # current = ""
-    # detector = HandDetector(detectionCon=0.8, maxHands=1)
     rf = Roboflow(api_key=os.getenv('API_KEY'))
     project = rf.workspace().project("asl-alphabet-recognition")
     model = project.version(7).model
 
     video = cv2.VideoCapture(0)
+    video.set(cv2.CAP_PROP_FRAME_WIDTH,320)
+    video.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
     video.set(cv2.CAP_PROP_BUFFERSIZE, 2)
     while True:
         ret, frame = video.read()
@@ -112,7 +111,7 @@ def main():
 
         cv2.imshow("Hi, user!", annotated_image)
 
-        time.sleep(1 / 30)
+        # time.sleep(1 / 30)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
