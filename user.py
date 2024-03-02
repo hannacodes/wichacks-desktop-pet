@@ -5,26 +5,13 @@ import cv2
 from cvzone.HandTrackingModule import HandDetector
 import os
 import webbrowser
-
-
-# tasks
-def open_google():
-    url = 'http://google.com'
-    webbrowser.open_new_tab(url)
-
-def open_notepad():
-    os.system("notepad.exe")
-
-def open_terminal(): 
-    os.system("start cmd.exe")
-
-def open_settings(): 
-    os.popen("start ms-settings:")
-
+import time
+import tasks
 
 def main():
     # currently_running = True
     video = cv2.VideoCapture(0)
+    video.set(cv2.CAP_PROP_BUFFERSIZE, 2)
     current = ""
     while(True):
         detector = HandDetector(detectionCon=0.8, maxHands=1)
@@ -33,7 +20,6 @@ def main():
         cv2.imshow('Hi, user!', frame) 
 
         hands, img = detector.findHands(frame)
-        
 
         # video.release()
 
@@ -48,7 +34,7 @@ def main():
             if fingerUp == [0, 1, 0, 0, 0]:
                 # open web browser
                 if not current == "google":
-                    open_google()
+                    tasks.open_google()
                     print(current)
                     current = "google"
 
@@ -56,7 +42,7 @@ def main():
             if fingerUp == [0, 1, 1, 0, 0]:
                 # open notepad
                 if not current == "notepad":
-                    open_notepad()
+                    tasks.open_notepad()
                     print(current)
                     current = "notepad"
 
@@ -64,14 +50,14 @@ def main():
             if fingerUp == [0, 1, 1, 1, 0]:
                 # open terminal
                 if not current == "terminal":
-                    open_terminal()
+                    tasks.open_terminal()
                     current = "terminal"
 
             # this one will open up the computer settings
             if fingerUp == [0, 1, 1, 1, 1]:
-                    # open settings
+                # open settings
                 if not current == "settings":
-                    open_settings()
+                    tasks.open_settings()
                     print(current)
                     current = "settings"
 
@@ -91,11 +77,13 @@ def main():
 
             if fingerUp == [0, 0, 0, 0, 0]:
                 current = "empty"
-        
-        #current = ""
+
+        # current = ""
 
         if cv2.waitKey(1) & 0xFF == ord('q'): 
             break
+
+        time.sleep(1/30)
 
 
 if __name__ == '__main__': 
