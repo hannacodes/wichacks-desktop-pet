@@ -61,7 +61,7 @@ class pet():
         elif not self.down and not self.idling:
             self.x -= 1
             if self.x <= 0:
-                self.idling
+                self.idling = True
                 self.right = True
         if self.down: 
             self.y += 1
@@ -70,8 +70,10 @@ class pet():
                 self.down = False
         if self.idling: 
             self.idlect += 1
-        if self.idlect > 20:
+
+        if self.idlect > 100:
             self.idling = False
+            self.idlect = 0
 
         self.window.geometry('128x128+{x}+{y}'.format(x=str(self.x), y=str(self.y)))
         self.label.configure(image=self.img)
@@ -107,7 +109,6 @@ class pet():
         self.label.configure(image=self.img)
         self.label.pack()
         self.update_num = self.window.after(10, self.update)
-
 
 if __name__ == '__main__':
     pet()
