@@ -7,7 +7,9 @@ class pet():
     def __init__(self):
         # create a window
         self.window = tk.Tk()
-
+        self.screen_width = self.window.winfo_screenwidth()
+        self.screen_height = self.window.winfo_screenheight()
+        self.right = True
         # placeholder image
         self.img = tk.PhotoImage(file="assets/placeholder.png")
 
@@ -28,7 +30,7 @@ class pet():
 
         # create a window of size 128x128 pixels, at coordinates 0,0
         self.x = 0
-        self.window.geometry('128x128+{x}+0'.format(x=str(self.x)))
+        self.window.geometry('128x128+{x}+{y}'.format(x=str(self.x), y=str(self.screen_height-165)))
 
         # add the image to our label
         self.label.configure(image=self.img)
@@ -41,12 +43,20 @@ class pet():
         self.window.mainloop()
 
     def update(self):
-        self.x += 1 
-        self.window.geometry('128x128+{x}+0'.format(x=str(self.x)))
+        print(self.x, self.screen_width)
+        if self.right:
+            self.x += 1
+            if self.x >= self.screen_width: 
+                self.right = False
+        else: 
+            self.x -= 1  
+            if self.x <= 0: 
+                self.right = True
+        self.window.geometry('128x128+{x}+{y}'.format(x=str(self.x), y=str(self.screen_height-165)))
         self.label.configure(image=self.img)
         self.label.pack()
-        # add code here
         self.window.after(10, self.update)
 
 
-pet()
+if __name__ == '__main__':
+    pet()
