@@ -31,7 +31,7 @@ class detection():
         box = []
         self.lmlist = []
         if self.results.multi_hand_landmarks:
-            hand = self.multi_hand_landmarks[handNumber]
+            hand = self.results.multi_hand_landmarks[handNumber]
             for id, lm in enumerate(hand.landmark):
                 h, w, d = img.shape
                 dx, dy = int(lm.x * w), int(lm.y * h)
