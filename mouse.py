@@ -26,7 +26,7 @@ class detector():
 
             return img
     
-    def findPosition(self, img, handNumber = 0, draw = True):
+    def findPos(self, img, handNumber = 0, draw = True):
         x = []
         y = []
         box = []
@@ -88,7 +88,7 @@ def main():
     while True:
         success, img = video.read()
         img = detector.findHands(img)
-        lmlist, box = detector.findPosition(img)
+        lmlist, box = detector.findPos(img)
         if len(lmlist) != 0:
             print(lmlist[4])
 
