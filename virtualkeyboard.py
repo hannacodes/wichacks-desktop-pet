@@ -1,8 +1,6 @@
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from time import sleep
-import numpy as np
-import cvzone
 from pynput.keyboard import Controller
 # pip install cvzone==1.4.1
 # pip install pynput

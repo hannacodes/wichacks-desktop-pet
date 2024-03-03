@@ -1,9 +1,7 @@
 import cv2
 from cvzone.HandTrackingModule import HandDetector
-from pynput.keyboard import Controller
 import pyautogui
 
-import tasks
 import virtualkeyboard
 
 def main():
