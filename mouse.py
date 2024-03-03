@@ -1,9 +1,8 @@
 import cv2
-from cvzone.HandTrackingModule import HandDetector
 import mediapipe as mp
 import math
 
-class detector():
+class detection():
     def __init__(self, mode = False, maxHands = 1, detectionCon = 0.5, trackCon = 0.5):
         self.mode = mode
         self.maxHands = maxHands
@@ -17,7 +16,7 @@ class detector():
 
     def findHand(self, img, draw = True):
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        self.results -= self.hands.process(rgb)
+        self.results == self.hands.process(rgb)
 
         if self.results.multi_hand:
             for handLms in self.results.multi_hand_landmarks:
@@ -83,11 +82,11 @@ class detector():
 
 def main():
     video = cv2.VideoCapture(0)
-    detector = HandDetector()
+    detector = detection()
 
     while True:
         success, img = video.read()
-        img = detector.findHands(img)
+        img = detector.findHand(img)
         lmlist, box = detector.findPos(img)
         if len(lmlist) != 0:
             print(lmlist[4])
