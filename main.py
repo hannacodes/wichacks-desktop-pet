@@ -159,11 +159,17 @@ class pet():
 
     def move_window(self, event):
         print("move")
+        x = event.x_root
+        y = event.y_root
         if self.right:
-            self.img = self.grab_right[0]
+            x -= 50
+            y -= 35
+            self.img = self.grab_right[2]
         else:
-            self.img = self.grab_left[0]
-        self.window.geometry(f"+{event.x_root}+{event.y_root}")
+            x -= 65
+            y -= 30
+            self.img = self.grab_left[2]
+        self.window.geometry(f"+{x}+{y}")
         self.label.configure(image=self.img)
         self.window.after_cancel(self.update_num)
 
