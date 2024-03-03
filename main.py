@@ -165,7 +165,6 @@ class pet():
             self.down = False
         else: 
             self.down = True
-        print('releaseeeeeeeeeeeeeeee')
         self.update_num = self.window.after(10, self.update)
 
     def widget_drag_free_bind(self):
