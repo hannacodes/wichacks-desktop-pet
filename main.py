@@ -67,7 +67,7 @@ class pet():
                 self.idling = True
                 self.right = True
         if self.down: 
-            self.y += 1
+            self.y += 10
             if self.y >= self.screen_height - 165: 
                 self.y = self.screen_height - 165
                 self.down = False
