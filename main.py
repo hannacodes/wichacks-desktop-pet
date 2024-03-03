@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import random as rand
 
@@ -9,16 +10,35 @@ class pet():
         self.window = tk.Tk()
         self.screen_width = self.window.winfo_screenwidth()
         self.screen_height = self.window.winfo_screenheight()
+
+        # image stuff
+        self.frame_index = 0
+        self.walk_left = [
+            tk.PhotoImage(
+                file="assets/walkcycle/left/gif.gif", format="gif -index %i" % (i)
+            )
+            for i in range(6)
+        ]
+        self.walk_right = [
+            tk.PhotoImage(
+                file="assets/walkcycle/right/gif.gif", format="gif -index %i" % (i)
+            )
+            for i in range(6)
+        ]
+        self.timestamp=time.time()
+
+        # flags
         self.mouse_pressed = False
         self.right = True
         self.down = False
         self.idling = False
         self.idlect = 0
+
         # placeholder image
-        self.img = tk.PhotoImage(file="assets/placeholder.png")
+        self.img = self.walk_right[self.frame_index]
 
         # set focushighlight to black when the window does not have focus
-        self.window.config(highlightbackground="black")
+        self.window.config(highlightbackground="grey")
 
         # make window frameless
         self.window.overrideredirect(True)
@@ -27,10 +47,10 @@ class pet():
         self.window.attributes("-topmost", True)
 
         # turn black into transparency
-        self.window.wm_attributes("-transparentcolor", "black")
+        self.window.wm_attributes("-transparentcolor", "grey")
 
         # create a label as a container for our image
-        self.label = tk.Label(self.window, bd=0, bg="black")
+        self.label = tk.Label(self.window, bd=0, bg="grey")
         self.x = 0
         self.y = self.screen_height - 165
         # create a window of size 128x128 pixels, at coordinates 0,0
@@ -48,6 +68,8 @@ class pet():
         self.window.bind("<Return>", lambda e: self.pick_up())
         self.window.bind("<l>", lambda e: self.throw_left())
         self.window.bind("<r>", lambda e: self.throw_right())
+        self.window.bind("<B1-Motion>", lambda e: self.move_window(e))
+        self.window.bind("<ButtonRelease-1>", lambda e: self.release())
         self.update_num = self.window.after(0, self.update)
         self.window.mainloop()
 
@@ -55,16 +77,24 @@ class pet():
         print(self.x, self.screen_width)
         if self.right and not self.down and not self.idling:
             self.x += 1
+            if time.time() > self.timestamp + 0.2:
+                self.timestamp = time.time()
+                self.frame_index = (self.frame_index + 1) % len(self.walk_right)
+                self.img = self.walk_right[self.frame_index]
             if self.x >= self.screen_width-100:
                 self.idling = True
                 self.right = False
         elif not self.down and not self.idling:
             self.x -= 1
+            if time.time() > self.timestamp + 0.2:
+                self.timestamp = time.time()
+                self.frame_index = (self.frame_index + 1) % len(self.walk_left)
+                self.img = self.walk_left[self.frame_index]
             if self.x <= 0:
                 self.idling = True
                 self.right = True
         if self.down: 
-            self.y += 1
+            self.y += 10
             if self.y >= self.screen_height - 165: 
                 self.y = self.screen_height - 165
                 self.down = False
@@ -79,6 +109,10 @@ class pet():
         self.label.configure(image=self.img)
         self.label.pack()
         self.update_num = self.window.after(10, self.update)
+
+    def move_window(self, event):
+        self.window.geometry(f"+{event.x_root}+{event.y_root}")
+        self.window.after_cancel(self.update_num)
 
     def pick_up(self):
         print("enter")
@@ -109,6 +143,51 @@ class pet():
         self.label.configure(image=self.img)
         self.label.pack()
         self.update_num = self.window.after(10, self.update)
+
+    def drag(self, event):
+        print("left", event)
+        self.window.after_cancel(self.update_num)
+        self.x = event.x
+        self.y = event.y
+        self.idling = True
+        # self.update_num = self.window.after(10, self.update)
+
+    def release(self):
+        self.window.after_cancel(self.update_num)
+        self.x = self.window.winfo_x()
+        self.y = self.window.winfo_y()
+        self.window.geometry("128x128+{x}+{y}".format(x=str(self.x), y=str(self.y)))
+
+        print("release")
+
+        if self.y >= self.screen_height - 165:
+            self.y = self.screen_height - 165
+            self.down = False
+        else: 
+            self.down = True
+        self.update_num = self.window.after(10, self.update)
+
+    def widget_drag_free_bind(self):
+        """Bind any widget or Tk master object with free drag"""
+        x, y = 0, 0
+        def mouse_motion(event):
+            global x, y
+            # Positive offset represent the mouse is moving to the lower right corner, negative moving to the upper left corner
+            offset_x, offset_y = event.x - x, event.y - y
+            new_x = self.window.winfo_x() + offset_x
+            new_y = self.window.winfo_y() + offset_y
+            new_geometry = f"+{new_x}+{new_y}"
+            self.window.geometry(new_geometry)
+
+        def mouse_press(event):
+            global x, y
+            count = time.time()
+            x, y = event.x, event.y
+            self.window.after_cancel(self.update_num)
+
+        self.window.bind("<B1-Motion>", mouse_motion)  # Hold the left mouse button and drag events
+        self.window.bind("<Button-1>", mouse_press)  # The left mouse button press event, long calculate by only once
+
 
 if __name__ == '__main__':
     pet()
