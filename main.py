@@ -50,7 +50,7 @@ class pet():
         self.window.bind("<l>", lambda e: self.throw_left())
         self.window.bind("<r>", lambda e: self.throw_right())
         self.window.bind("<B1-Motion>", lambda e: self.move_window(e))
-        # self.window.bind("<ButtonRelease>", lambda e: self.update())
+        self.window.bind("<ButtonRelease-1>", lambda e: self.release())
         self.update_num = self.window.after(0, self.update)
         self.window.mainloop()
 
@@ -67,7 +67,7 @@ class pet():
                 self.idling = True
                 self.right = True
         if self.down: 
-            self.y += 1
+            self.y += 10
             if self.y >= self.screen_height - 165: 
                 self.y = self.screen_height - 165
                 self.down = False
@@ -126,16 +126,20 @@ class pet():
         # self.update_num = self.window.after(10, self.update)
 
     def release(self):
+        self.window.after_cancel(self.update_num)
+        self.x = self.window.winfo_x()
+        self.y = self.window.winfo_y()
+        self.window.geometry("128x128+{x}+{y}".format(x=str(self.x), y=str(self.y)))
+
         print("release")
-        if self.x >= self.screen_width - 100:
-            self.idling = True
-            self.right = False
-        if self.x <= 0:
-            self.idling = True
-            self.right = True
+
         if self.y >= self.screen_height - 165:
             self.y = self.screen_height - 165
             self.down = False
+        else: 
+            self.down = True
+        print('releaseeeeeeeeeeeeeeee')
+        self.update_num = self.window.after(10, self.update)
 
     def widget_drag_free_bind(self):
         """Bind any widget or Tk master object with free drag"""
@@ -153,9 +157,11 @@ class pet():
             global x, y
             count = time.time()
             x, y = event.x, event.y
+            self.window.after_cancel(self.update_num)
 
         self.window.bind("<B1-Motion>", mouse_motion)  # Hold the left mouse button and drag events
         self.window.bind("<Button-1>", mouse_press)  # The left mouse button press event, long calculate by only once
+
 
 if __name__ == '__main__':
     pet()
