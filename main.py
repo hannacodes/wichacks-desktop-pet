@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import random as rand
 
@@ -48,6 +49,8 @@ class pet():
         self.window.bind("<Return>", lambda e: self.pick_up())
         self.window.bind("<l>", lambda e: self.throw_left())
         self.window.bind("<r>", lambda e: self.throw_right())
+        self.window.bind("<B1-Motion>", lambda e: self.move_window(e))
+        # self.window.bind("<ButtonRelease>", lambda e: self.update())
         self.update_num = self.window.after(0, self.update)
         self.window.mainloop()
 
@@ -80,6 +83,10 @@ class pet():
         self.label.pack()
         self.update_num = self.window.after(10, self.update)
 
+    def move_window(self, event):
+        self.window.geometry(f"+{event.x_root}+{event.y_root}")
+        self.window.after_cancel(self.update_num)
+
     def pick_up(self):
         print("enter")
         self.down = True
@@ -109,6 +116,46 @@ class pet():
         self.label.configure(image=self.img)
         self.label.pack()
         self.update_num = self.window.after(10, self.update)
+
+    def drag(self, event):
+        print("left", event)
+        self.window.after_cancel(self.update_num)
+        self.x = event.x
+        self.y = event.y
+        self.idling = True
+        # self.update_num = self.window.after(10, self.update)
+
+    def release(self):
+        print("release")
+        if self.x >= self.screen_width - 100:
+            self.idling = True
+            self.right = False
+        if self.x <= 0:
+            self.idling = True
+            self.right = True
+        if self.y >= self.screen_height - 165:
+            self.y = self.screen_height - 165
+            self.down = False
+
+    def widget_drag_free_bind(self):
+        """Bind any widget or Tk master object with free drag"""
+        x, y = 0, 0
+        def mouse_motion(event):
+            global x, y
+            # Positive offset represent the mouse is moving to the lower right corner, negative moving to the upper left corner
+            offset_x, offset_y = event.x - x, event.y - y
+            new_x = self.window.winfo_x() + offset_x
+            new_y = self.window.winfo_y() + offset_y
+            new_geometry = f"+{new_x}+{new_y}"
+            self.window.geometry(new_geometry)
+
+        def mouse_press(event):
+            global x, y
+            count = time.time()
+            x, y = event.x, event.y
+
+        self.window.bind("<B1-Motion>", mouse_motion)  # Hold the left mouse button and drag events
+        self.window.bind("<Button-1>", mouse_press)  # The left mouse button press event, long calculate by only once
 
 if __name__ == '__main__':
     pet()
