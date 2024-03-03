@@ -66,6 +66,7 @@ def show_keyboard(cap, detector, buttonList, keyboard, finalText):
                         length = len(finalText)
                         removeText = finalText[0:length-1]
                         finalText = removeText
+                        keyboard.press(keyboard._Key.backspace)
                     else:
                         keyboard.press(button.text)
                         finalText += button.text
