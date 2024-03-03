@@ -98,7 +98,6 @@ class pet():
         self.window.mainloop()
 
     def update(self):
-        print(self.x, self.screen_width)
 
         # idle random
         sit = rand.randint(0, 10000)
@@ -158,7 +157,6 @@ class pet():
         self.update_num = self.window.after(10, self.update)
 
     def move_window(self, event):
-        print("move")
         x = event.x_root
         y = event.y_root
         if self.right:
@@ -174,7 +172,6 @@ class pet():
         self.window.after_cancel(self.update_num)
 
     def pick_up(self):
-        print("enter")
         self.down = True
         self.window.after_cancel(self.update_num)
         self.y = rand.randint(int(self.screen_height/4), 2*int(self.screen_height/4))
@@ -184,7 +181,6 @@ class pet():
         self.update_num = self.window.after(10, self.update)
 
     def throw_left(self):
-        print("left")
         self.down = True
         self.window.after_cancel(self.update_num)
         self.x = 0
@@ -194,7 +190,6 @@ class pet():
         self.update_num = self.window.after(10, self.update)
 
     def throw_right(self):
-        print("left")
         self.down = True
         self.window.after_cancel(self.update_num)
         self.x = self.screen_width-100
@@ -204,7 +199,6 @@ class pet():
         self.update_num = self.window.after(10, self.update)
 
     def drag(self, event):
-        print("left", event)
         self.window.after_cancel(self.update_num)
         self.x = event.x
         self.y = event.y
@@ -216,8 +210,6 @@ class pet():
         self.x = self.window.winfo_x()
         self.y = self.window.winfo_y()
         self.window.geometry("128x128+{x}+{y}".format(x=str(self.x), y=str(self.y)))
-
-        print("release")
 
         if self.y >= self.screen_height - 165:
             self.y = self.screen_height - 165
