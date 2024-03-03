@@ -87,6 +87,5 @@ def main(cap):
     while True: 
         finalText, done = show_keyboard(cap, detector, buttonList, keyboard, finalText)
         if done:
-            print(finalText)
             break
-    tasks.search_google(driver, finalText)
+    tasks.search_google(driver)
