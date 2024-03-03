@@ -15,16 +15,27 @@ class pet():
         self.frame_index = 0
         self.walk_left = [
             tk.PhotoImage(
-                file="assets/walkcycle/left/gif.gif", format="gif -index %i" % (i)
+                file="assets/left/gif.gif", format="gif -index %i" % (i)
             )
             for i in range(6)
         ]
         self.walk_right = [
             tk.PhotoImage(
-                file="assets/walkcycle/right/gif.gif", format="gif -index %i" % (i)
+                file="assets/right/gif.gif", format="gif -index %i" % (i)
             )
             for i in range(6)
         ]
+        self.idle_right = [
+            tk.PhotoImage(
+                file="assets/right/idle.gif", format="gif -index %i" % (i)
+            )
+            for i in range(6)
+        ]
+        self.idle_left = [
+            tk.PhotoImage(file="assets/left/idle.gif", format="gif -index %i" % (i))
+            for i in range(6)
+        ]
+
         self.timestamp=time.time()
 
         # flags
@@ -75,6 +86,14 @@ class pet():
 
     def update(self):
         print(self.x, self.screen_width)
+
+        # idle random
+        sit = rand.randint(0, 10000)
+        if sit < 10 and not self.idling: 
+            print(sit)
+            self.idling = True
+            self.idlect = 0
+
         if self.right and not self.down and not self.idling:
             self.x += 1
             if time.time() > self.timestamp + 0.2:
@@ -100,8 +119,18 @@ class pet():
                 self.down = False
         if self.idling: 
             self.idlect += 1
+            if self.right:
+                if time.time() > self.timestamp + 0.5:
+                    self.timestamp = time.time()
+                    self.frame_index = (self.frame_index + 1) % len(self.idle_right)
+                    self.img = self.idle_right[self.frame_index]
+            else: 
+                if time.time() > self.timestamp + 0.5:
+                    self.timestamp = time.time()
+                    self.frame_index = (self.frame_index + 1) % len(self.idle_left)
+                    self.img = self.idle_left[self.frame_index]
 
-        if self.idlect > 100:
+        if self.idlect > 200:
             self.idling = False
             self.idlect = 0
 
