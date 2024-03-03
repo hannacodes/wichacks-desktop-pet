@@ -10,16 +10,35 @@ class pet():
         self.window = tk.Tk()
         self.screen_width = self.window.winfo_screenwidth()
         self.screen_height = self.window.winfo_screenheight()
+
+        # image stuff
+        self.frame_index = 0
+        self.walk_left = [
+            tk.PhotoImage(
+                file="assets/walkcycle/left/gif.gif", format="gif -index %i" % (i)
+            )
+            for i in range(6)
+        ]
+        self.walk_right = [
+            tk.PhotoImage(
+                file="assets/walkcycle/right/gif.gif", format="gif -index %i" % (i)
+            )
+            for i in range(6)
+        ]
+        self.timestamp=time.time()
+
+        # flags
         self.mouse_pressed = False
         self.right = True
         self.down = False
         self.idling = False
         self.idlect = 0
+
         # placeholder image
-        self.img = tk.PhotoImage(file="assets/placeholder.png")
+        self.img = self.walk_right[self.frame_index]
 
         # set focushighlight to black when the window does not have focus
-        self.window.config(highlightbackground="black")
+        self.window.config(highlightbackground="grey")
 
         # make window frameless
         self.window.overrideredirect(True)
@@ -28,10 +47,10 @@ class pet():
         self.window.attributes("-topmost", True)
 
         # turn black into transparency
-        self.window.wm_attributes("-transparentcolor", "black")
+        self.window.wm_attributes("-transparentcolor", "grey")
 
         # create a label as a container for our image
-        self.label = tk.Label(self.window, bd=0, bg="black")
+        self.label = tk.Label(self.window, bd=0, bg="grey")
         self.x = 0
         self.y = self.screen_height - 165
         # create a window of size 128x128 pixels, at coordinates 0,0
@@ -58,11 +77,19 @@ class pet():
         print(self.x, self.screen_width)
         if self.right and not self.down and not self.idling:
             self.x += 1
+            if time.time() > self.timestamp + 0.2:
+                self.timestamp = time.time()
+                self.frame_index = (self.frame_index + 1) % len(self.walk_right)
+                self.img = self.walk_right[self.frame_index]
             if self.x >= self.screen_width-100:
                 self.idling = True
                 self.right = False
         elif not self.down and not self.idling:
             self.x -= 1
+            if time.time() > self.timestamp + 0.2:
+                self.timestamp = time.time()
+                self.frame_index = (self.frame_index + 1) % len(self.walk_left)
+                self.img = self.walk_left[self.frame_index]
             if self.x <= 0:
                 self.idling = True
                 self.right = True
