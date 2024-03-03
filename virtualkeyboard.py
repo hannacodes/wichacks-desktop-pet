@@ -15,20 +15,17 @@ def drawAll(img, buttonList):
             x, y = button.pos
             w, h = button.size
             cv2.rectangle(img, button.pos, (x + w, y + h), (169, 169, 169), cv2.FILLED)
-            cv2.putText(img, button.text, (x + 20, y + 65),
+            cv2.putText(img, button.text, (x, y + 50),
                         cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
         return img
 
 class Button():
-    def __init__(self, pos, text, size=[85, 85]):
+    def __init__(self, pos, text, size=[45, 55]):
         self.pos = pos
         self.size = size
         self.text = text
 
 def setup(): 
-    cap = cv2.VideoCapture(0)
-    cap.set(3, 1280)
-    cap.set(4, 720)
 
     detector = HandDetector(detectionCon=1)
     keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -40,9 +37,9 @@ def setup():
     buttonList = []
     for i in range(len(keys)):
         for j, key in enumerate(keys[i]):
-            buttonList.append(Button([100 * j + 50, 100 * i + 50], key))
+            buttonList.append(Button([60 * j + 30, 70 * i + 60], key))
 
-    return cap, detector, buttonList, keyboard
+    return detector, buttonList, keyboard
 
 def show_keyboard(cap, detector, buttonList, keyboard, finalText):
     success, img = cap.read()
@@ -59,12 +56,12 @@ def show_keyboard(cap, detector, buttonList, keyboard, finalText):
             if x < lmList[8][0] < x + w and y < lmList[8][1] < y + h:
                 # hover 
                 cv2.rectangle(img, (x - 5, y - 5), (x + w + 5, y + h + 5), (117, 117, 117), cv2.FILLED)
-                cv2.putText(img, button.text, (x + 20, y + 65),
+                cv2.putText(img, button.text, (x, y + 50),
                             cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
-                l, _, _ = detector.findDistance(8, 12, img, draw=False)
+                l, _, _ = detector.findDistance(4, 8, img, draw=False)
 
                 ## when clicked
-                if l < 30:
+                if l < 20:
                     if button.text == ">":
                         return finalText, True
                     if button.text == "<":
@@ -73,24 +70,23 @@ def show_keyboard(cap, detector, buttonList, keyboard, finalText):
                         finalText = removeText
                     else:
                         keyboard.press(button.text)
-                        print(button.text)
-                        
                         finalText += button.text
-                    sleep(0.15)
-    cv2.rectangle(img, (50, 350), (700, 450), (169, 169, 169), cv2.FILLED)
-    cv2.putText(img, finalText, (60, 430),
-            cv2.FONT_HERSHEY_PLAIN, 5, (255, 255, 255), 5)
+                    sleep(0.2)
+    cv2.rectangle(img, (50, 300), (600, 375), (169, 169, 169), cv2.FILLED)
+    cv2.putText(img, finalText, (60, 360),
+            cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
     cv2.imshow("Image", img)
     cv2.waitKey(1)
 
     return finalText, False
 
-#driver = tasks.open_google()
-cap, detector, buttonList, keyboard = setup()
-finalText = ""
-while True: 
-    finalText, done = show_keyboard(cap, detector, buttonList, keyboard, finalText)
-    if done:
-        print(finalText)
-        break
-#tasks.search_google(driver, text)
+def main(cap):
+    driver = tasks.open_google()
+    detector, buttonList, keyboard = setup()
+    finalText = ""
+    while True: 
+        finalText, done = show_keyboard(cap, detector, buttonList, keyboard, finalText)
+        if done:
+            print(finalText)
+            break
+    tasks.search_google(driver, finalText)

@@ -1,45 +1,48 @@
 import cv2
-import mediapipe as mp
+from cvzone.HandTrackingModule import HandDetector
+from pynput.keyboard import Controller
 import pyautogui
-# pip install pyautogui
 
-cap = cv2.VideoCapture(0)
-hand_detector = mp.solutions.hands.Hands()
-drawing_utils = mp.solutions.drawing_utils
-screen_width, screen_height = pyautogui.size()
-index_y = 0
-while True:
-    _, frame = cap.read()
-    frame = cv2.flip(frame, 1)
-    frame_height, frame_width, _ = frame.shape
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    output = hand_detector.process(rgb_frame)
-    hands = output.multi_hand_landmarks
-    if hands:
-        for hand in hands:
-            drawing_utils.draw_landmarks(frame, hand)
-            landmarks = hand.landmark
-            for id, landmark in enumerate(landmarks):
-                x = int(landmark.x*frame_width)
-                y = int(landmark.y*frame_height)
-                if id == 8:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0, 255, 255))
-                    index_x = screen_width/frame_width*x
-                    index_y = screen_height/frame_height*y
+import tasks
+import virtualkeyboard
 
-                if id == 4:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0, 255, 255))
-                    thumb_x = screen_width/frame_width*x
-                    thumb_y = screen_height/frame_height*y
-                    if abs(index_y - thumb_y) < 20:
-                        pyautogui.mouseDown(button='left')
-                        
-                    elif abs(index_y - thumb_y) < 100:
-                        pyautogui.moveTo(index_x, index_y)
+def main():
+    cap = cv2.VideoCapture(0)
+    screen_width, screen_height = pyautogui.size()
 
-                    else: 
-                        pyautogui.mouseUp()        
-                        
+    detector = HandDetector(detectionCon=1)
 
-    cv2.imshow('Virtual Mouse', frame)
-    cv2.waitKey(1)
+    while True: 
+        success, img = cap.read()
+        frame_height, frame_width, _ = img.shape
+        img = cv2.flip(img, 1)
+        img = detector.findHands(img)
+        lmList, bboxInfo = detector.findPosition(img)
+
+        if lmList:
+            l, _, _ = detector.findDistance(4, 8, img, draw=False)
+            fingerup = detector.fingersUp()
+            x_finger = lmList[8][0]
+            y_finger = lmList[8][1]
+            
+            if fingerup == [0, 1, 1, 1, 1]:
+                break
+            if fingerup == [0, 0, 0, 0, 1]:
+                virtualkeyboard.main(cap)
+
+            # thumb and pointer close to each other
+            if l < 20:
+                pyautogui.mouseDown()
+            elif l < 100:
+                index_x = screen_width/frame_width*x_finger
+                index_y = screen_height/frame_height*y_finger
+                pyautogui.moveTo(index_x, index_y)
+            else: 
+                pyautogui.mouseUp()  
+                
+
+        cv2.imshow("Image", img)
+        cv2.setWindowProperty("Image", cv2.WND_PROP_TOPMOST, 1)
+        cv2.waitKey(1)
+
+main()
