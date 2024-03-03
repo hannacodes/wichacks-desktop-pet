@@ -23,8 +23,8 @@ def main():
             x_finger = lmList[8][0]
             y_finger = lmList[8][1]
             
-            if fingerup == [0, 1, 1, 1, 1]:
-                break
+            #if fingerup == [0, 1, 1, 1, 1]:
+                #break
             if fingerup == [0, 0, 0, 0, 1]:
                 virtualkeyboard.main(cap)
 
