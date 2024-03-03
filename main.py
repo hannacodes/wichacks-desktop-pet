@@ -36,6 +36,19 @@ class pet():
             for i in range(6)
         ]
 
+        self.grab_right = [
+            tk.PhotoImage(file="assets/right/grab.gif", format="gif -index %i" % (i))
+            for i in range(4)
+        ]
+
+        self.grab_left = [
+            tk.PhotoImage(file="assets/left/grab.gif", format="gif -index %i" % (i))
+            for i in range(4)
+        ]
+
+        self.fall_left = tk.PhotoImage(file="assets/left/fall.png")
+        self.fall_right = tk.PhotoImage(file="assets/right/fall.png")
+
         self.timestamp=time.time()
 
         # flags
@@ -89,7 +102,7 @@ class pet():
 
         # idle random
         sit = rand.randint(0, 10000)
-        if sit < 10 and not self.idling: 
+        if sit < 10 and not self.idling and not self.down: 
             print(sit)
             self.idling = True
             self.idlect = 0
@@ -113,6 +126,11 @@ class pet():
                 self.idling = True
                 self.right = True
         if self.down: 
+            if self.right:
+                self.img = self.fall_right
+            else: 
+                self.img = self.fall_left
+
             self.y += 10
             if self.y >= self.screen_height - 165: 
                 self.y = self.screen_height - 165
@@ -140,7 +158,13 @@ class pet():
         self.update_num = self.window.after(10, self.update)
 
     def move_window(self, event):
+        print("move")
+        if self.right:
+            self.img = self.grab_right[0]
+        else:
+            self.img = self.grab_left[0]
         self.window.geometry(f"+{event.x_root}+{event.y_root}")
+        self.label.configure(image=self.img)
         self.window.after_cancel(self.update_num)
 
     def pick_up(self):
