@@ -1,6 +1,10 @@
 # Pawsible
 Anything is possible (on your computer) with Pawsible!
 
+## How to run
+Works with Python -v 11
+Run both main.py and virtualmouse.py
+
 ## Inspiration
 We were inspired by desktop pets that walked around on your desktop and kept you company while doing work! We also wanted to use this as an opportunity to add accessibility into using the computer. 
 
